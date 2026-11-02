@@ -1,0 +1,26 @@
+name: P0 probe (can GitHub open the DTEK page?)
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '17 */3 * * *'     # every 3 hours while we collect evidence; delete this block after P0
+permissions: { contents: read }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install
+        working-directory: probe
+        run: npm install --no-audit --no-fund
+      - name: Self-test of the classifier
+        working-directory: probe
+        run: npm test
+      - name: Probe the official page (3 gentle requests)
+        working-directory: probe
+        run: node probe.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: probe-result, path: "probe/probe-result.json\nprobe/probe-screenshot.png", retention-days: 5, if-no-files-found: ignore }

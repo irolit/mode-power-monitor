@@ -1,0 +1,1 @@
+{ "name": "mode-power-monitor-probe", "private": true, "type": "module", "scripts": { "test": "node --test", "probe": "node probe.mjs" }, "dependencies": { "playwright": "^1.49.0" } }
